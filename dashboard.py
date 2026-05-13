@@ -90,22 +90,19 @@ if not df.empty:
     other_count = int(df[df['コミュニティ'] == 'その他']['枚数_num'].sum())
 
     st.subheader("🎯 申込状況")
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     
-    progress_100 = min(100.0, round((total_tickets / 100) * 100, 1))
+    progress_150 = min(100.0, round((total_tickets / 150) * 100, 1))
     
     with col1:
         with st.container(border=True):
             st.metric("総申込数", f"{total_tickets} 名")
     with col2:
         with st.container(border=True):
-            st.metric("達成率（最低目標）", f"{progress_100} %")
+            st.metric("達成率（目標:150名）", f"{progress_150} %")
     with col3:
         with st.container(border=True):
             st.metric("懇親会申込者数", "0 名")
-    with col4:
-        with st.container(border=True):
-            st.metric("ハンズオン申込者数", "0 名")
     
     st.progress(min(total_tickets / 200.0, 1.0))
     st.divider()
