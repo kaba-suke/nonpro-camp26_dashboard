@@ -76,7 +76,13 @@ if not df.empty:
     elif total_tickets >= 150:
         st.success("🔥 祝！目標の150名をクリア！最大目標の200名まであと少しです！この調子でいきましょう🚀")
     elif total_tickets >= 100:
-        st.success("👍 祝！最低目標の100名をクリア！次は目標の150名を目指して頑張りましょう！")
+        st.success("👍 祝！達成目標の100名をクリア！次は目標の150名を目指して頑張りましょう！")
+    elif total_tickets >= 50:
+        st.info("💪 最低目標の50名に到達！次は達成目標の100名を目指していきましょう！")
+    elif total_tickets >= 25:
+        st.info("🌱 中間地点の25名を突破！引き続き発信を続けていきましょう！応援しています！")
+    else:
+        st.warning("🚀 まずは25名を目指して発信を続けましょう！皆さんの力が必要です！")
 
     # コミュニティ内訳の計算
     nonpro_count = int(df[df['コミュニティ'] == 'ノンプロ研']['枚数_num'].sum())
@@ -213,20 +219,25 @@ if not df.empty:
                 y=alt.Y('累計申し込み件数:Q', title='累計申し込み件数（件）', scale=alt.Scale(domain=[0, max_line_y]))
             )
             
-            # 目標ライン (最低100, 目標150, 最大200)
-            rule_100 = alt.Chart(pd.DataFrame({'y': [100]})).mark_rule(color='blue', strokeDash=[5, 5]).encode(y='y')
-            rule_150 = alt.Chart(pd.DataFrame({'y': [150]})).mark_rule(color='green', strokeDash=[5, 5]).encode(y='y')
-            rule_200 = alt.Chart(pd.DataFrame({'y': [200]})).mark_rule(color='red', strokeDash=[5, 5]).encode(y='y')
-            
-            # ラインのラベル
-            text_100 = alt.Chart(pd.DataFrame({'y': [100], 'text': ['最低:100']})).mark_text(align='left', baseline='bottom', color='blue', dx=5, dy=-2).encode(y='y', text='text')
-            text_150 = alt.Chart(pd.DataFrame({'y': [150], 'text': ['目標:150']})).mark_text(align='left', baseline='bottom', color='green', dx=5, dy=-2).encode(y='y', text='text')
-            text_200 = alt.Chart(pd.DataFrame({'y': [200], 'text': ['最大:200']})).mark_text(align='left', baseline='bottom', color='red', dx=5, dy=-2).encode(y='y', text='text')
-            
+            # 目標ライン (中間25, 最低50, 達成100, 目標150, 最大200)
+            rule_25  = alt.Chart(pd.DataFrame({'y': [25]})).mark_rule(color='#AAAAAA', strokeDash=[4, 4]).encode(y='y')
+            rule_50  = alt.Chart(pd.DataFrame({'y': [50]})).mark_rule(color='#FF8C00', strokeDash=[5, 5]).encode(y='y')
+            rule_100 = alt.Chart(pd.DataFrame({'y': [100]})).mark_rule(color='#1E90FF', strokeDash=[5, 5]).encode(y='y')
+            rule_150 = alt.Chart(pd.DataFrame({'y': [150]})).mark_rule(color='#32CD32', strokeDash=[5, 5]).encode(y='y')
+            rule_200 = alt.Chart(pd.DataFrame({'y': [200]})).mark_rule(color='#FF3333', strokeDash=[5, 5]).encode(y='y')
+
+            # ラインのラベル（fontSize=15で見やすく）
+            text_25  = alt.Chart(pd.DataFrame({'y': [25],  'text': ['中間:25名']})).mark_text(align='left', baseline='bottom', color='#888888', dx=5, dy=-3, fontSize=15, fontWeight='bold').encode(y='y', text='text')
+            text_50  = alt.Chart(pd.DataFrame({'y': [50],  'text': ['最低:50名']})).mark_text(align='left', baseline='bottom', color='#FF8C00', dx=5, dy=-3, fontSize=15, fontWeight='bold').encode(y='y', text='text')
+            text_100 = alt.Chart(pd.DataFrame({'y': [100], 'text': ['達成:100名']})).mark_text(align='left', baseline='bottom', color='#1E90FF', dx=5, dy=-3, fontSize=15, fontWeight='bold').encode(y='y', text='text')
+            text_150 = alt.Chart(pd.DataFrame({'y': [150], 'text': ['目標:150名']})).mark_text(align='left', baseline='bottom', color='#32CD32', dx=5, dy=-3, fontSize=15, fontWeight='bold').encode(y='y', text='text')
+            text_200 = alt.Chart(pd.DataFrame({'y': [200], 'text': ['最大:200名']})).mark_text(align='left', baseline='bottom', color='#FF3333', dx=5, dy=-3, fontSize=15, fontWeight='bold').encode(y='y', text='text')
+
             # 7日おきの区切り線
             rule_div = alt.Chart(div_df).mark_rule(color='gray', strokeDash=[2, 2], opacity=0.5).encode(x='日付:T')
-            
-            layered = alt.layer(bar, line + rule_100 + text_100 + rule_150 + text_150 + rule_200 + text_200 + rule_div).resolve_scale(y='independent')
+
+            all_rules = rule_25 + text_25 + rule_50 + text_50 + rule_100 + text_100 + rule_150 + text_150 + rule_200 + text_200 + rule_div
+            layered = alt.layer(bar, line + all_rules).resolve_scale(y='independent')
             chart_ph.altair_chart(layered, use_container_width=True)
             time.sleep(0.05)
         
