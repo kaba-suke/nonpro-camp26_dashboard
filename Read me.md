@@ -62,15 +62,13 @@ Peatix (注文データ) → Googleスプレッドシート → dashboard.py が
 
 #### 📝 確認用CSVの出力（任意）
 
-データクレンジング後の内容をファイルで目視確認したい場合は、`dashboard.py` の以下の行の `#` を外してから起動します。
+データクレンジング後の内容をファイルで目視確認したい場合は、専用のスクリプト `export_data.py` を実行します。
 
-```python
-# df.to_csv("csdata.csv", index=False, encoding="utf-8-sig")
-↓ #を外す
-df.to_csv("csdata.csv", index=False, encoding="utf-8-sig")
+```powershell
+.\.venv\Scripts\python.exe export_data.py
 ```
 
-起動後、プロジェクトフォルダ内に `csdata.csv` が生成されます。確認が終わったら、再び `#` でコメントアウトしておいてください。
+実行すると、プロジェクトフォルダ内に `csdata.csv` が生成されます。Streamlitを起動せずに、クレンジング結果だけを素早く確認したい場合に便利です。
 
 ---
 
@@ -117,8 +115,8 @@ df.to_csv("csdata.csv", index=False, encoding="utf-8-sig")
 | ファイル/フォルダ | 役割 |
 |---|---|
 | `dashboard.py` | ダッシュボードのメインスクリプト。データ取得・クレンジング・集計・グラフ描画のすべてのロジックが含まれる。 |
+| `export_data.py` | クレンジング後のデータをCSV出力するための確認用スクリプト。 |
 | `sample_data.csv` | **昨年（2025年）のキャンプ申し込みデータ**を参考として保存したファイル。2026年5月12日以降の本番運用では使用しない。過去データの傾向確認や開発・テスト時の参照用として残してある。 |
-| `csdata.csv` | データクレンジング後の確認用CSV（任意出力）。`dashboard.py` 内でコメントアウトで管理。 |
-| `csdashboard_ncamp26/` | プロジェクトのドキュメント類を格納するフォルダ。 |
-| `csdashboard_ncamp26/steering_file.md` | ダッシュボード開発の目的・要件定義・実装機能などをまとめた仕様書。 |
+| `csdata.csv` | データクレンジング後の確認用CSV。 `export_data.py` を実行することで生成される。 |
+| `steering_file.md` | ダッシュボード開発の目的・要件定義・実装機能などをまとめた仕様書。 |
 | `.venv/` | Pythonの仮想環境フォルダ。Streamlit・Pandas・Altairなど必要なライブラリが格納されている。 |

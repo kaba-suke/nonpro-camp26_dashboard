@@ -21,8 +21,7 @@ def load_data():
         to_drop = duplicated_orders & is_free_or_donation
         df = df[~to_drop]
         
-        # 確認用としてクレンジング後のデータをCSVに出力_確認したい時だけ#解除して実行
-       # df.to_csv("csdata.csv", index=False, encoding="utf-8-sig")
+
         
         # コミュニティ集計用に「属性」から「コミュニティ」列を作成
         if '属性' in df.columns:
@@ -89,6 +88,13 @@ if not df.empty:
     ex_nonpro_count = int(df[df['コミュニティ'] == '元ノンプロ研']['枚数_num'].sum())
     other_count = int(df[df['コミュニティ'] == 'その他']['枚数_num'].sum())
 
+    # 懇親会申込者数の集計（チケット名に「懇親会チケット」を含む、かつ会員 IDが重複しないレコード数）
+    if '会員 ID' in df.columns and 'チケット名' in df.columns:
+        konsin_df = df[df['チケット名'].str.contains('懇親会チケット', na=False)]
+        konsin_count = konsin_df['会員 ID'].nunique()
+    else:
+        konsin_count = 0
+
     st.subheader("🎯 申込状況")
     col1, col2, col3 = st.columns(3)
     
@@ -102,7 +108,7 @@ if not df.empty:
             st.metric("達成率（目標:150名）", f"{progress_150} %")
     with col3:
         with st.container(border=True):
-            st.metric("懇親会申込者数", "0 名")
+            st.metric("懇親会申込者数", f"{konsin_count} 名")
     
     st.progress(min(total_tickets / 200.0, 1.0))
     st.divider()
