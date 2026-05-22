@@ -58,13 +58,17 @@ if not df.empty:
     df['枚数_num'] = pd.to_numeric(df['枚数'], errors='coerce').fillna(0)
     actual_total_tickets = int(df['枚数_num'].sum())
     
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("🛠 デバッグモード")
-    use_debug = st.sidebar.checkbox("チケット枚数を手動でテストする")
-    if use_debug:
-        total_tickets = st.sidebar.slider("テスト用チケット枚数", 0, 250, 100)
-    else:
-        total_tickets = actual_total_tickets
+    # --- デバッグモード (本番では非表示にするためコメントアウト) ---
+    # st.sidebar.markdown("---")
+    # st.sidebar.subheader("🛠 デバッグモード")
+    # use_debug = st.sidebar.checkbox("チケット枚数を手動でテストする")
+    # if use_debug:
+    #     total_tickets = st.sidebar.slider("テスト用チケット枚数", 0, 250, 100)
+    # else:
+    #     total_tickets = actual_total_tickets
+    
+    # 本番用: 実際のチケット枚数をそのまま使用
+    total_tickets = actual_total_tickets
     
     # 目標達成時のエフェクト
     if total_tickets >= 200:
