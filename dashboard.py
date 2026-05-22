@@ -56,28 +56,159 @@ if not df.empty:
 
     # 枚数を数値化して総数を計算
     df['枚数_num'] = pd.to_numeric(df['枚数'], errors='coerce').fillna(0)
-    total_tickets = int(df['枚数_num'].sum())
+    actual_total_tickets = int(df['枚数_num'].sum())
+    
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🛠 デバッグモード")
+    use_debug = st.sidebar.checkbox("チケット枚数を手動でテストする")
+    if use_debug:
+        total_tickets = st.sidebar.slider("テスト用チケット枚数", 0, 250, 100)
+    else:
+        total_tickets = actual_total_tickets
     
     # 目標達成時のエフェクト
     if total_tickets >= 200:
+        st.success("✨🎉 祝！最大目標の200名を達成しました！運営チームの皆様、本当にお疲れ様です！ 🎉✨")
+        # 200名: 花丸をつける
+        st.markdown(
+            """
+            <style>
+            .hanamaru-container {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 99999;
+                pointer-events: none;
+                animation: pop-hanamaru 6s ease-out forwards;
+            }
+            @keyframes pop-hanamaru {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1) rotate(-90deg); }
+                15% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+                30% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+                85% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5) rotate(0deg); visibility: hidden; }
+            }
+            </style>
+            <div class="hanamaru-container">
+                <span style="font-size: 400px; line-height: 1; text-shadow: 0px 10px 30px rgba(0,0,0,0.3);">💮</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    elif total_tickets >= 150:
+        st.success("🔥 祝！目標の150名をクリア！最大目標の200名まであと少しです！この調子でいきましょう🚀")
+        # 150名: バルーンを飛ばす
         st.balloons()
         st.markdown(
             """
             <style>
             [data-testid="stBalloons"] div {
-                animation-duration: 8s !important;
+                animation-duration: 24s !important; /* スピードを1/3にするため時間を3倍に */
             }
             </style>
             """,
             unsafe_allow_html=True
         )
-        st.success("✨🎉 祝！最大目標の200名を達成しました！運営チームの皆様、本当にお疲れ様です！ 🎉✨")
-    elif total_tickets >= 150:
-        st.success("🔥 祝！目標の150名をクリア！最大目標の200名まであと少しです！この調子でいきましょう🚀")
     elif total_tickets >= 100:
         st.success("👍 祝！達成目標の100名をクリア！次は目標の150名を目指して頑張りましょう！")
+        # 100名: 花火を打ち上げる
+        st.markdown(
+            """
+            <style>
+            .firework-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                pointer-events: none;
+                z-index: 99999;
+                overflow: hidden;
+            }
+            .firework {
+                position: absolute;
+                bottom: -200px;
+                background-color: transparent !important; /* 背景色なし */
+                animation: shoot-firework 5s ease-out forwards;
+            }
+            .fw-1 { left: 15%; animation-delay: 0s; font-size: 200px; }
+            .fw-2 { left: 45%; animation-delay: 1.5s; font-size: 320px; }
+            .fw-3 { left: 80%; animation-delay: 0.5s; font-size: 240px; }
+            .fw-4 { left: 30%; animation-delay: 2.5s; font-size: 220px; }
+            .fw-5 { left: 65%; animation-delay: 3s; font-size: 280px; }
+
+            @keyframes shoot-firework {
+                0% { transform: translateY(0) scale(0.5); opacity: 1; }
+                40% { transform: translateY(-50vh) scale(1); opacity: 1; }
+                70% { transform: translateY(-60vh) scale(1.5); opacity: 0; }
+                100% { transform: translateY(-60vh) scale(2); opacity: 0; visibility: hidden; }
+            }
+            </style>
+            <div class="firework-container">
+                <div class="firework fw-1">🎆</div>
+                <div class="firework fw-2">🎆</div>
+                <div class="firework fw-3">🎆</div>
+                <div class="firework fw-4">🎆</div>
+                <div class="firework fw-5">🎆</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     elif total_tickets >= 50:
         st.info("💪 最低目標の50名に到達！次は達成目標の100名を目指していきましょう！")
+        # 50名: 波を立てる
+        st.markdown(
+            """
+            <style>
+            .wave-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100vw;
+                height: 70vh; /* 大波にするため高さを上げる */
+                overflow: hidden;
+                pointer-events: none;
+                z-index: 99999;
+                /* 波が下から押し寄せて、最後に引いていくアニメーション (半分の時間に短縮) */
+                animation: fade-out-wave 6s forwards;
+            }
+            .wave {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 300vw;
+                height: 100%;
+                /* 少し荒々しい波の形 */
+                background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%230099ff" fill-opacity="0.6" d="M0,192L48,181.3C96,171,192,149,288,160C384,171,480,213,576,224C672,235,768,213,864,181.3C960,149,1056,107,1152,112C1248,117,1344,171,1392,197.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+                background-size: 33.33% 100%;
+                /* スピードを倍に(時間は半分: 4秒) */
+                animation: move-wave-left 4s linear 2 forwards;
+            }
+            .wave-2 {
+                bottom: -20px;
+                opacity: 0.4;
+                /* 後ろの波も時間は半分(6秒) */
+                animation: move-wave-left 6s linear 1 forwards reverse;
+            }
+            @keyframes move-wave-left {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-33.33%); }
+            }
+            @keyframes fade-out-wave {
+                0% { opacity: 0; transform: translateY(30vh); }
+                10% { opacity: 1; transform: translateY(0); }
+                80% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(30vh); visibility: hidden; }
+            }
+            </style>
+            <div class="wave-container">
+                <div class="wave"></div>
+                <div class="wave wave-2"></div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     elif total_tickets >= 25:
         st.info("🌱 中間地点の25名を突破！引き続き発信を続けていきましょう！応援しています！")
     else:
