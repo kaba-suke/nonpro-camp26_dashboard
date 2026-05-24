@@ -1,12 +1,19 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import base64
+import os
 
 # ページの設定
 st.set_page_config(page_title="Tech Camp 2026 申し込みダッシュボード", layout="wide")
 
-st.title("🎉 Nonpro Camp 2026 申し込みダッシュボード 🚀")
-st.markdown("運営チームの皆様、お疲れ様です！このダッシュボードで現在地を確認し、最高目標の**200名**達成に向けてみんなで盛り上がっていきましょう！🔥")
+# 背景画像を Base64 エンコードして読み込む
+def _get_b64_image(path: str) -> str:
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+_hero_img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ノンプロキャンプ2026ロゴ_main_title.png")
+_hero_img_b64 = _get_b64_image(_hero_img_path)
 
 # データの読み込み
 @st.cache_data(ttl=600)  # 10分間データをキャッシュ
@@ -45,19 +52,16 @@ def load_data():
 df = load_data()
 
 if not df.empty:
-    # --- ワクワク感の演出とKPIの表示 ---
-    # データの最新日付を取得
+    # --- データの最新日付を取得 ---
     if '申込日' in df.columns:
         latest_update = pd.to_datetime(df['申込日'], errors='coerce').max().strftime("%Y-%m-%d")
     else:
         latest_update = "不明"
-        
-    st.info(f"💡 **応援メッセージ**: 日々の発信お疲れ様です！数字の動きを楽しみながら、みんなでキャンプを大成功させましょう！ (データ最終更新日: {latest_update})")
 
     # 枚数を数値化して総数を計算
     df['枚数_num'] = pd.to_numeric(df['枚数'], errors='coerce').fillna(0)
     actual_total_tickets = int(df['枚数_num'].sum())
-    
+
     # --- デバッグモード (本番では非表示にするためコメントアウト) ---
     # st.sidebar.markdown("---")
     # st.sidebar.subheader("🛠 デバッグモード")
@@ -66,13 +70,110 @@ if not df.empty:
     #     total_tickets = st.sidebar.slider("テスト用チケット枚数", 0, 250, 100)
     # else:
     #     total_tickets = actual_total_tickets
-    
+
     # 本番用: 実際のチケット枚数をそのまま使用
     total_tickets = actual_total_tickets
-    
-    # 目標達成時のエフェクト
+
+    # ---- ヒーローセクション用: ミルストーンメッセージの内容を決定 ----
     if total_tickets >= 200:
-        st.success("✨🎉 祝！最大目標の200名を達成しました！運営チームの皆様、本当にお疲れ様です！ 🎉✨")
+        milestone_bg   = "rgba(0, 160, 80, 0.82)"
+        milestone_left = "#00c864"
+        milestone_msg  = "✨🎉 祝！最大目標の200名を達成しました！運営チームの皆様、本当にお疲れ様です！ 🎉✨"
+    elif total_tickets >= 150:
+        milestone_bg   = "rgba(0, 160, 80, 0.82)"
+        milestone_left = "#00c864"
+        milestone_msg  = "🔥 祝！目標の150名をクリア！最大目標の200名まであと少しです！この調子でいきましょう🚀"
+    elif total_tickets >= 100:
+        milestone_bg   = "rgba(0, 160, 80, 0.82)"
+        milestone_left = "#00c864"
+        milestone_msg  = "👍 祝！達成目標の100名をクリア！次は目標の150名を目指して頑張りましょう！"
+    elif total_tickets >= 50:
+        milestone_bg   = "rgba(0, 90, 200, 0.80)"
+        milestone_left = "#3399ff"
+        milestone_msg  = "💪 最低目標の50名に到達！次は達成目標の100名を目指していきましょう！"
+    elif total_tickets >= 25:
+        milestone_bg   = "rgba(0, 90, 200, 0.80)"
+        milestone_left = "#3399ff"
+        milestone_msg  = "🌱 中間地点の25名を突破！引き続き発信を続けていきましょう！応援しています！"
+    else:
+        milestone_bg   = "rgba(180, 110, 0, 0.82)"
+        milestone_left = "#f0a500"
+        milestone_msg  = "🚀 まずは25名を目指して発信を続けましょう！皆さんの力が必要です！"
+
+    # ---- ヒーローセクション: タイトル〜中間地点メッセージを背景画像付きで一括表示 ----
+    st.markdown(f"""
+    <style>
+    .hero-section {{
+        background-image: url("data:image/png;base64,{_hero_img_b64}");
+        background-size: cover;
+        background-position: center top;
+        background-repeat: no-repeat;
+        border-radius: 14px;
+        padding: 44px 52px;
+        margin-bottom: 20px;
+        position: relative;
+    }}
+    .hero-section::before {{
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.22);
+        border-radius: 14px;
+        z-index: 0;
+    }}
+    .hero-content {{
+        position: relative;
+        z-index: 1;
+    }}
+    .hero-title {{
+        font-size: 2.1em;
+        font-weight: bold;
+        color: #003d7a;
+        text-shadow: 0 1px 4px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.7);
+        margin: 0 0 14px 0;
+    }}
+    .hero-desc {{
+        font-size: 1.05em;
+        color: #003060;
+        background: rgba(255,255,255,0.60);
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 12px;
+        line-height: 1.7;
+    }}
+    .hero-cheering {{
+        background: rgba(0, 80, 180, 0.78);
+        border-left: 4px solid #66b3ff;
+        border-radius: 8px;
+        padding: 12px 18px;
+        color: #ffffff;
+        font-size: 1em;
+        margin-bottom: 12px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }}
+    .hero-milestone {{
+        background: {milestone_bg};
+        border-left: 5px solid {milestone_left};
+        border-radius: 8px;
+        padding: 13px 18px;
+        color: #ffffff;
+        font-size: 1.05em;
+        font-weight: bold;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }}
+    </style>
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-title">🎉 Nonpro Camp 2026 申し込みダッシュボード 🚀</div>
+            <div class="hero-desc">運営チームの皆様、お疲れ様です！このダッシュボードで現在地を確認し、最高目標の<strong>200名</strong>達成に向けてみんなで盛り上がっていきましょう！🔥</div>
+            <div class="hero-cheering">💡 <strong>応援メッセージ</strong>: 日々の発信お疲れ様です！数字の動きを楽しみながら、みんなでキャンプを大成功させましょう！（データ最終更新日: {latest_update}）</div>
+            <div class="hero-milestone">{milestone_msg}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---- 目標達成時のアニメーション演出（テキストはヒーローセクションに統合済み） ----
+    if total_tickets >= 200:
         # 200名: 花丸をつける
         st.markdown(
             """
@@ -101,7 +202,6 @@ if not df.empty:
             unsafe_allow_html=True
         )
     elif total_tickets >= 150:
-        st.success("🔥 祝！目標の150名をクリア！最大目標の200名まであと少しです！この調子でいきましょう🚀")
         # 150名: バルーンを飛ばす
         st.balloons()
         st.markdown(
@@ -115,7 +215,6 @@ if not df.empty:
             unsafe_allow_html=True
         )
     elif total_tickets >= 100:
-        st.success("👍 祝！達成目標の100名をクリア！次は目標の150名を目指して頑張りましょう！")
         # 100名: 花火を打ち上げる
         st.markdown(
             """
@@ -160,7 +259,6 @@ if not df.empty:
             unsafe_allow_html=True
         )
     elif total_tickets >= 50:
-        st.info("💪 最低目標の50名に到達！次は達成目標の100名を目指していきましょう！")
         # 50名: 波を立てる
         st.markdown(
             """
@@ -213,10 +311,6 @@ if not df.empty:
             """,
             unsafe_allow_html=True
         )
-    elif total_tickets >= 25:
-        st.info("🌱 中間地点の25名を突破！引き続き発信を続けていきましょう！応援しています！")
-    else:
-        st.warning("🚀 まずは25名を目指して発信を続けましょう！皆さんの力が必要です！")
 
     # コミュニティ内訳の計算
     nonpro_count = int(df[df['コミュニティ'] == 'ノンプロ研']['枚数_num'].sum())
@@ -303,18 +397,29 @@ if not df.empty:
                 order=alt.Order(field='id', type='quantitative')
             )
             
-            text = alt.Chart(pd.DataFrame({'t': [f"{curr_tot}名"]})).mark_text(size=30, fontWeight='bold').encode(text='t')
+            text = alt.Chart(pd.DataFrame({'t': [f"{curr_tot}名"]})).mark_text(size=30, fontWeight='bold', color='#4A90D9').encode(text='t')
             goal_ph.altair_chart(g_chart + thresh_chart + text, use_container_width=True)
             
             # Breakdown Donut
             b_df = pd.DataFrame({'id':[1,2,3], 'コミュニティ':['ノンプロ研','元ノンプロ研','その他'], '人数':[curr_nonpro, curr_ex, curr_oth]})
             # 0だと表示が崩れるのを防ぐ
             if b_df['人数'].sum() > 0:
-                b_chart = alt.Chart(b_df).mark_arc(innerRadius=60).encode(
-                    theta=alt.Theta(field="人数", type="quantitative"),
+                b_base = alt.Chart(b_df).encode(
+                    theta=alt.Theta(field="人数", type="quantitative", stack=True),
                     color=alt.Color(field="コミュニティ", type="nominal", sort=['ノンプロ研','元ノンプロ研','その他'], scale=alt.Scale(domain=['ノンプロ研','元ノンプロ研','その他'], range=['#00C49F','#FFBB28','#FF8042']), legend=alt.Legend(title=None, orient="bottom")),
                     order=alt.Order(field='id', type='quantitative')
-                ).properties(height=300)
+                )
+                b_arc = b_base.mark_arc(innerRadius=60)
+                # 各セグメントの人数ラベルをグラフ内部に表示（0名のセグメントは非表示）
+                b_label_df = b_df[b_df['人数'] > 0].copy()
+                b_label_base = alt.Chart(b_label_df).encode(
+                    theta=alt.Theta(field="人数", type="quantitative", stack=True),
+                    order=alt.Order(field='id', type='quantitative')
+                )
+                b_label = b_label_base.mark_text(radius=100, size=15, fontWeight='bold', color='white').encode(
+                    text=alt.Text(field="人数", type="quantitative", format=".0f")
+                )
+                b_chart = (b_arc + b_label).properties(height=300)
                 break_ph.altair_chart(b_chart, use_container_width=True)
             
             time.sleep(0.01)
