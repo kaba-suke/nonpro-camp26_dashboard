@@ -15,8 +15,8 @@ def _get_b64_image(path) -> str:
 
 _hero_img_b64 = ""
 try:
-    # pathlib で確実にパスを解決する（Streamlit 環境でも動作）
-    _hero_img_path = Path(__file__).resolve().parent.parent / "ノンプロキャンプ2026ロゴ_main_title.png"
+    # pathlib で確実にパスを解決する（dashboard.py と同じフォルダに画像を配置）
+    _hero_img_path = Path(__file__).resolve().parent / "ノンプロキャンプ2026ロゴ_main_title.png"
     if _hero_img_path.exists():
         _hero_img_b64 = _get_b64_image(_hero_img_path)
     else:
