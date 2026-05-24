@@ -3,17 +3,26 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import base64
 import os
+from pathlib import Path
 
 # ページの設定
 st.set_page_config(page_title="Tech Camp 2026 申し込みダッシュボード", layout="wide")
 
-# 背景画像を Base64 エンコードして読み込む
-def _get_b64_image(path: str) -> str:
+# 背景画像を Base64 エンコードして読み込む（パスが見つからない場合はフォールバック）
+def _get_b64_image(path) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
-_hero_img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ノンプロキャンプ2026ロゴ_main_title.png")
-_hero_img_b64 = _get_b64_image(_hero_img_path)
+_hero_img_b64 = ""
+try:
+    # pathlib で確実にパスを解決する（Streamlit 環境でも動作）
+    _hero_img_path = Path(__file__).resolve().parent.parent / "ノンプロキャンプ2026ロゴ_main_title.png"
+    if _hero_img_path.exists():
+        _hero_img_b64 = _get_b64_image(_hero_img_path)
+    else:
+        st.warning(f"背景画像が見つかりません: {_hero_img_path}")
+except Exception as _e:
+    st.warning(f"背景画像の読み込みに失敗しました: {_e}")
 
 # データの読み込み
 @st.cache_data(ttl=600)  # 10分間データをキャッシュ
