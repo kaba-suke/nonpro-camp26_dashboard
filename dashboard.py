@@ -118,9 +118,10 @@ if not df.empty:
     st.markdown(f"""
     <style>
     .hero-section {{
+        background-color: #ffffff; /* 画像の背景に馴染むように白色ベースに設定 */
         background-image: url("data:image/png;base64,{_hero_img_b64}");
-        background-size: cover;
-        background-position: center top;
+        background-size: contain; /* 画像全体が枠内に収まるように変更 */
+        background-position: center; /* 中央に配置 */
         background-repeat: no-repeat;
         border-radius: 14px;
         padding: 44px 52px;
@@ -131,7 +132,7 @@ if not df.empty:
         content: '';
         position: absolute;
         inset: 0;
-        background: rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.4); /* 文字が読みやすいように白のオーバーレイを少し濃く調整 */
         border-radius: 14px;
         z-index: 0;
     }}
