@@ -31,12 +31,17 @@ def load_data():
     try:
         df = pd.read_csv(url)
         
-        # 注文番号が同一、かつチケット名に「イベント参加チケット【無料】」または「投げ銭で応援」と書いてあるレコードを削除
-        duplicated_orders = df.duplicated(subset=['注文番号'], keep=False)
-        is_free_or_donation = df['チケット名'].str.contains('イベント参加チケット【無料】|投げ銭で応援', na=False)
-        to_drop = duplicated_orders & is_free_or_donation
-        df = df[~to_drop]
+        # 「投げ銭で応援」は参加枠ではないため、無条件で除外する
+        is_donation = df['チケット名'].str.contains('投げ銭で応援', na=False)
         
+        # 注文番号が同一（他のチケットと同時購入）、かつ「イベント参加チケット【無料】」のレコードを除外（人数を重複カウントしないため）
+        duplicated_orders = df.duplicated(subset=['注文番号'], keep=False)
+        is_free = df['チケット名'].str.contains('イベント参加チケット【無料】', na=False)
+        is_duplicated_free = duplicated_orders & is_free
+        
+        # 削除条件を結合して除外
+        to_drop = is_donation | is_duplicated_free
+        df = df[~to_drop]        
 
         
         # コミュニティ集計用に「属性」から「コミュニティ」列を作成
