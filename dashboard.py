@@ -368,23 +368,29 @@ if not df.empty:
         import altair as alt
         import time
 
-        # ドーナツグラフのプレースホルダー
-        d_col1, d_col2 = st.columns(2)
+        # ドーナツグラフと画像を配置するためのカラム（比率で画像サイズを元の約75%に調整）
+        d_col1, d_col_img, d_col2 = st.columns([4.5, 1, 4.5])
+        
         with d_col1:
             st.markdown("**🎯 購入枚数進捗**")
             goal_ph = st.empty()
             
-            # ブロックの右下あたりに画像を配置
-            spacer1, spacer2, img_col = st.columns([3, 2, 2])
-            with img_col:
-                # 添付された画像を「avatar.png」などとして同じフォルダに保存してください
-                _avatar_path = Path(__file__).resolve().parent / "avatar.png"
-                if _avatar_path.exists():
-                    st.image(str(_avatar_path), use_container_width=True)
-                else:
-                    # 画像がない場合のプレースホルダー
-                    st.caption("※ここに画像が入ります")
-                    
+        with d_col_img:
+            # グラフの縦方向の中央付近に配置するため、少し余白を入れる
+            for _ in range(5):
+                st.write("")
+                
+            # pngとwebpの両方に対応
+            _avatar_path = Path(__file__).resolve().parent / "avatar.png"
+            _avatar_path_webp = Path(__file__).resolve().parent / "avatar.webp"
+            
+            if _avatar_path.exists():
+                st.image(str(_avatar_path), use_container_width=True)
+            elif _avatar_path_webp.exists():
+                st.image(str(_avatar_path_webp), use_container_width=True)
+            else:
+                st.caption("※ここに画像が入ります")
+                
         with d_col2:
             st.markdown("**👥 参加者内訳**")
             break_ph = st.empty()
