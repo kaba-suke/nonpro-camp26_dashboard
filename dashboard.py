@@ -373,6 +373,18 @@ if not df.empty:
         with d_col1:
             st.markdown("**🎯 購入枚数進捗**")
             goal_ph = st.empty()
+            
+            # ブロックの右下あたりに画像を配置
+            spacer1, spacer2, img_col = st.columns([3, 2, 2])
+            with img_col:
+                # 添付された画像を「avatar.png」などとして同じフォルダに保存してください
+                _avatar_path = Path(__file__).resolve().parent / "avatar.png"
+                if _avatar_path.exists():
+                    st.image(str(_avatar_path), use_container_width=True)
+                else:
+                    # 画像がない場合のプレースホルダー
+                    st.caption("※ここに画像が入ります")
+                    
         with d_col2:
             st.markdown("**👥 参加者内訳**")
             break_ph = st.empty()
