@@ -517,19 +517,20 @@ if not df.empty:
             time.sleep(0.05)
             
         st.divider()
-        
-        # バナー画像の表示
+        # バナー画像を中央に、画面幅の半分程度で表示する
         _banner_path = Path(__file__).resolve().parent / "banner.png"
         _banner_path_webp = Path(__file__).resolve().parent / "banner.webp"
         
-        if _banner_path.exists():
-            st.image(str(_banner_path), use_container_width=True)
-        elif _banner_path_webp.exists():
-            st.image(str(_banner_path_webp), use_container_width=True)
-        else:
-            st.caption("※ここにバナー画像が入ります")
-            
-        st.divider()
+        # 左右に空白のカラムを配置して中央に寄せる（比率 1:2:1 ＝ 画像が50%）
+        b_spacer1, b_img_col, b_spacer2 = st.columns([1, 2, 1])
+        
+        with b_img_col:
+            if _banner_path.exists():
+                st.image(str(_banner_path), use_container_width=True)
+            elif _banner_path_webp.exists():
+                st.image(str(_banner_path_webp), use_container_width=True)
+            else:
+                st.caption("※ここにバナー画像が入ります")
         
         # 集計結果テーブルをアコーディオンで隠す
         with st.expander("集計結果テーブルを表示"):
