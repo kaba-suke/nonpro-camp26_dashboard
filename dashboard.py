@@ -187,7 +187,7 @@ if not df.empty:
     """, unsafe_allow_html=True)
 
     # ---- 目標達成時のアニメーション演出（テキストはヒーローセクションに統合済み） ----
-    if total_tickets >= 200:
+    if 200 <= total_tickets < 210:
         # 200名: 花丸をつける
         st.markdown(
             """
@@ -215,7 +215,7 @@ if not df.empty:
             """,
             unsafe_allow_html=True
         )
-    elif total_tickets >= 150:
+    elif 150 <= total_tickets < 160:
         # 150名: バルーンを飛ばす
         st.balloons()
         st.markdown(
@@ -228,7 +228,7 @@ if not df.empty:
             """,
             unsafe_allow_html=True
         )
-    elif total_tickets >= 100:
+    elif 100 <= total_tickets < 110:
         # 100名: 花火を打ち上げる
         st.markdown(
             """
@@ -272,7 +272,7 @@ if not df.empty:
             """,
             unsafe_allow_html=True
         )
-    elif total_tickets >= 50:
+    elif 50 <= total_tickets < 60:
         # 50名: 波を立てる
         st.markdown(
             """
@@ -368,29 +368,13 @@ if not df.empty:
         import altair as alt
         import time
 
-        # ドーナツグラフと画像を配置するためのカラム（比率で画像サイズを元の約75%に調整）
-        d_col1, d_col_img, d_col2 = st.columns([4.5, 1, 4.5])
+        # ドーナツグラフを配置するためのカラム
+        d_col1, d_col2 = st.columns(2)
         
         with d_col1:
             st.markdown("**🎯 購入枚数進捗**")
             goal_ph = st.empty()
             
-        with d_col_img:
-            # グラフの縦方向の中央付近に配置するため、少し余白を入れる
-            for _ in range(5):
-                st.write("")
-                
-            # pngとwebpの両方に対応
-            _avatar_path = Path(__file__).resolve().parent / "avatar.png"
-            _avatar_path_webp = Path(__file__).resolve().parent / "avatar.webp"
-            
-            if _avatar_path.exists():
-                st.image(str(_avatar_path), use_container_width=True)
-            elif _avatar_path_webp.exists():
-                st.image(str(_avatar_path_webp), use_container_width=True)
-            else:
-                st.caption("※ここに画像が入ります")
-                
         with d_col2:
             st.markdown("**👥 参加者内訳**")
             break_ph = st.empty()
