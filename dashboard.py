@@ -27,7 +27,12 @@ except Exception as _e:
 # データの読み込み
 @st.cache_data(ttl=600)  # 10分間データをキャッシュ
 def load_data():
-    url = "https://docs.google.com/spreadsheets/d/11okpDWHaDWemwIJc9pcZx_4GNFNPjp1po03tws1P5oE/export?format=csv&gid=564753256"
+    # Streamlit SecretsからURLを取得（GitHub上には公開されません）
+    if "SHEET_URL" not in st.secrets:
+        st.error("エラー: シークレット (secrets.toml) に 'SHEET_URL' が設定されていません。")
+        return pd.DataFrame()
+        
+    url = st.secrets["SHEET_URL"]
     try:
         df = pd.read_csv(url)
         
